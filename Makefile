@@ -4,6 +4,7 @@ CC =		cc
 CFLAGS =	-Oz -nostdinc -fomit-frame-pointer
 CFLAGS +=	-fno-PIE -fno-PIC -fno-ret-protector
 CFLAGS +=	-fno-stack-protector -mno-retpoline
+CFLAGS +=	-fno-asynchronous-unwind-tables
 CFLAGS +=	-Wno-int-to-void-pointer-cast
 
 PROG =	bfc
