@@ -1,7 +1,7 @@
 bfc
 ===
 bfc is a compiler that compiles Brainfuck to amd64 assembly.
-It is a static binary under 2 KB (1833 bytes).
+It is a static binary under 2 KB (1832 bytes).
 
 The typical usage is as follows:
 ```
