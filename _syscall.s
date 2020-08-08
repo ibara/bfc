@@ -15,6 +15,7 @@
  */
 
 	.text
+	.p2align 2
 	.globl	_syscall
 _syscall:
 	movq	%rdi, %rax
