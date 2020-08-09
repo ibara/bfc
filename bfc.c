@@ -80,19 +80,22 @@ dputs(const char *s, int fd)
 static void
 dputi(int n, int fd)
 {
-	char out[3];
-	int i;
+	char num[10];
+	int i, neg = 0;
+
+	if (n < 0)
+		neg = 1;
 
 	i = 0;
 	do {
-		out[i++] = n % 10 + '0';
+		num[i++] = n % 10 + '0';
 	} while ((n /= 10) > 0);
 
-	if (i > 2)
-		write(fd, &out[2], 1);
-	if (i > 1)
-		write(fd, &out[1], 1);
-	write(fd, &out[0], 1);
+	if (neg == 1)
+		write(fd, "-", 1);
+
+	for (i--; i >= 0; i--)
+		write(fd, &num[i], 1);
 }
 
 static void
@@ -228,7 +231,7 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	if ((fd2 = open(argv[2], 0x0002 | 0x0200 | 0x0400, 000755)) == -1) {
+	if ((fd2 = open(argv[2], 0x0002 | 0x0200 | 0x0400, 000644)) == -1) {
 		dputs("bfc: could not open output file\n", 1);
 		close(fd1);
 		return 1;
