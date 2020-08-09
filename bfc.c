@@ -83,8 +83,10 @@ dputi(int n, int fd)
 	char num[10];
 	int i, neg = 0;
 
-	if (n < 0)
+	if (n < 0) {
 		neg = 1;
+		n = -n;
+	}
 
 	i = 0;
 	do {
