@@ -1,13 +1,15 @@
 bfc
 ===
 bfc is a compiler that compiles Brainfuck to amd64 assembly.
-It is a static binary under 2 KB (1832 bytes).
+It is a static binary under 2 KB (1791 bytes).
+
+![bfc QR code](bfc.png)
 
 The typical usage is as follows:
 ```
 $ bfc hello.bf hello.s
-$ as -o hello.o hello.s bfrt.s
-$ ld -nopie -o hello hello.o
+$ as -o hello.o hello.o
+$ ld -nopie -o hello hello.o bfrt.o
 $ ./hello
 ```
 

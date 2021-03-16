@@ -12,11 +12,14 @@ LDFLAGS +=	-Wl,--gc-sections
 PROG =	bfc
 OBJS =	_start.o _syscall.o bfc.o crt.o
 
-all: ${OBJS}
+all: ${OBJS} bfrt.o
 	/usr/bin/ld -nopie -o ${PROG} ${OBJS}
 	/usr/bin/strip ${PROG}
 	/usr/bin/strip -R .comment ${PROG}
 	/usr/bin/gzexe ${PROG}
 
+qr:
+	qrencode -r ${PROG} -8 -o ${PROG}.png
+
 clean:
-	rm -rf ${PROG} ${OBJS} ${PROG}.core ${PROG}~
+	rm -rf ${PROG} ${OBJS} bfrt.o ${PROG}.core ${PROG}~
