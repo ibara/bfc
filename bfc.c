@@ -18,44 +18,37 @@
  * bfc -- tiny brainfuck compiler
  */
 
-extern void *_syscall(void *n, void *a, void *b, void *c, void *d, void *e);
+extern void *_syscall(void *n, void *a, void *b, void *c);
 
 static unsigned char label[256];
 static int l, m;
-
-static void
-_exit(int status)
-{
-
-	_syscall((void *) 1, (void *) status, (void *) 0, (void *) 0, (void *) 0, (void *) 0);
-}
 
 static long
 read(int d, void *buf, unsigned long nbytes)
 {
 
-	return (long) _syscall((void *) 3, (void *) d, (void *) buf, (void *) nbytes, (void *) 0, (void *) 0);
+	return (long) _syscall((void *) 3, (void *) d, (void *) buf, (void *) nbytes);
 }
 
 static void
 write(int d, const void *buf, unsigned long nbytes)
 {
 
-	_syscall((void *) 4, (void *) d, (void *) buf, (void *) nbytes, (void *) 0, (void *) 0);
+	_syscall((void *) 4, (void *) d, (void *) buf, (void *) nbytes);
 }
 
 static long
 open(const char *path, int flags, unsigned int mode)
 {
 
-	return (long) _syscall((void *) 5, (void *) path, (void *) flags, (void *) mode, (void *) 0, (void *) 0);
+	return (long) _syscall((void *) 5, (void *) path, (void *) flags, (void *) mode);
 }
 
 static void
 close(int d)
 {
 
-	_syscall((void *) 6, (void *) d, (void *) 0, (void *) 0, (void *) 0, (void *) 0);
+	_syscall((void *) 6, (void *) d, (void *) 0, (void *) 0);
 }
 
 static long
@@ -111,7 +104,6 @@ prologue(int fd)
 	dputs("main:\n", fd);
 	dputs("\tpushq\t%rbp\n", fd);
 	dputs("\tmovq\t%rsp, %rbp\n", fd);
-	dputs("\tsubq\t$16, %rsp\n", fd);
 	dputs("\tleaq\ttape(%rip), %r15\n", fd);
 }
 
@@ -123,7 +115,6 @@ epilogue(int fd)
 	dputs("\tleaveq\n", fd);
 	dputs("\tretq\n", fd);
 	dputs("\t.size\tmain,.-main\n", fd);
-	dputs("\n", fd);
 	dputs("\t.local\ttape\n", fd);
 	dputs("\t.comm\ttape,65536,1\n", fd);
 	dputs("\t.end\n", fd);
@@ -169,11 +160,7 @@ getchar(int fd)
 	dputs("\tmovl\t$0, %edi\n", fd);
 	dputs("\tmovq\t%r15, %rsi\n", fd);
 	dputs("\tmovl\t$1, %edx\n", fd);
-	dputs("\tmovq\t$0, %rcx\n", fd);
-	dputs("\tmovq\t$0, %r8\n", fd);
-	dputs("\tmovq\t$0, %r9\n", fd);
 	dputs("\tsyscall\n", fd);
-	dputs("\txorl\t%eax, %eax\n", fd);
 }
 
 static void
@@ -184,11 +171,7 @@ putchar(int fd)
 	dputs("\tmovl\t$1, %edi\n", fd);
 	dputs("\tmovq\t%r15, %rsi\n", fd);
 	dputs("\tmovl\t$1, %edx\n", fd);
-	dputs("\tmovq\t$0, %rcx\n", fd);
-	dputs("\tmovq\t$0, %r8\n", fd);
-	dputs("\tmovq\t$0, %r9\n", fd);
 	dputs("\tsyscall\n", fd);
-	dputs("\txorl\t%eax, %eax\n", fd);
 }
 
 static void
@@ -196,7 +179,7 @@ open_loop(int fd)
 {
 
 	label[l] = m++;
-	dputs(".LS", fd);
+	dputs(".LB", fd);
 	dputi(label[l], fd);
 	dputs(":\n", fd);
 	dputs("\tmovsbl\t(%r15), %eax\n", fd);
@@ -210,7 +193,7 @@ static void
 close_loop(int fd)
 {
 
-	dputs("\tjmp\t.LS", fd);
+	dputs("\tjmp\t.LB", fd);
 	dputi(label[--l], fd);
 	dputs("\n", fd);
 	dputs(".LE", fd);

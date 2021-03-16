@@ -22,8 +22,6 @@ _syscall:
 	movq	%rsi, %rdi
 	movq	%rdx, %rsi
 	movq	%rcx, %rdx
-	movq	%r8, %rcx
-	movq	%r9, %r8
 	syscall
 	retq
 	.size	_syscall,.-_syscall
