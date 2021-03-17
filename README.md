@@ -1,16 +1,11 @@
 bfc
 ===
-bfc is a compiler that compiles Brainfuck to amd64 assembly.
-It is a static binary under 2 KB (1791 bytes).
+bfc is a multi-platform compiler that compiles Brainfuck to assembly.
 
-![bfc QR code](bfc.png)
-
-The typical usage is as follows:
+Typical usage is as follows:
 ```
-$ bfc hello.bf hello.s
-$ as -o hello.o hello.o
-$ ld -nopie -o hello hello.o bfrt.o
-$ ./hello
+$ bfc hello.bf | cc -x assembler -
+$ ./a.out
 ```
 
 Why?
@@ -22,11 +17,15 @@ about this codebase.
 
 Building
 --------
-Just run `make`.
-This will probably only run on
-[OpenBSD](https://www.openbsd.org)/amd64
-as is.
-Feel free to port to your Unix of choice.
+Run `./configure` to detect your native CPU.
+Then run `make`.
+
+Supported CPUs
+--------------
+* amd64 (x86_64)
+* i386 (i486, i586, i686, i786)
+
+Please feel free to add additional CPU support.
 
 License
 -------

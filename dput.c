@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Brian Callahan <bcallah@openbsd.org>
+ * Copyright (c) 2021 Brian Callahan <bcallah@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,37 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-	.section ".note.openbsd.ident", "a"
-	.p2align 2
-	.long	0x8
-	.long	0x4
-	.long	0x1
-	.asciz	"OpenBSD"
-	.long	0x0
+#include <string.h>
+#include <unistd.h>
 
-	.text
-	.globl	_start
-_start:
-	callq	main
-	movl	$1, %eax
-	xorl	%edi, %edi
-	syscall
-	.size	_start,.-_start
+#include "bfc.h"
+
+void
+dputi(int n, int fd)
+{
+	char num[10];
+	int i, neg = 0;
+
+	if (n < 0) {
+		neg = 1;
+		n = -n;
+	}
+
+	i = 0;
+	do {
+		num[i++] = n % 10 + '0';
+	} while ((n /= 10) > 0);
+
+	if (neg == 1)
+		write(fd, "-", STDOUT_FILENO);
+
+	for (i--; i >= 0; i--)
+		write(fd, &num[i], STDOUT_FILENO);
+}
+
+void
+dputs(const char *s, int fd)
+{
+
+	write(fd, s, strlen(s));
+}

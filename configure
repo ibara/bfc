@@ -1,0 +1,54 @@
+#!/bin/sh
+
+prefix="/usr/local"
+mach=`uname -m`
+
+for opt
+do
+  case "$opt" in
+    --prefix=*)
+      prefix=${opt#*=}
+      ;;
+    --help|-h)
+      echo "Usage: configure [options]"
+      echo ""
+      echo "Options:"
+      /usr/bin/printf "  --help or -h            "
+      echo "Display this help message"
+      /usr/bin/printf "  --prefix=PREFIX         "
+      echo "Top level install directory is PREFIX [$prefix]"
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
+
+case "$mach" in
+  amd64|x86_64) mach="amd64" ; target=0 ;;
+  i?86) mach="i386" ; target=1 ;;
+esac
+
+/usr/bin/printf "Native CPU: %s\n" $mach
+
+cat << EOF > Makefile
+# bfc Makefile
+
+CC =		cc
+CFLAGS =	-g -O2 -DTARGET=$target
+
+PROG =	bfc
+OBJS =	amd64.o bfc.o cg.o dput.o i386.o
+
+all: \${OBJS}
+	\${CC} \${LDFLAGS} -o \${PROG} \${OBJS}
+
+install:
+	install -m 755 \${PROG} $prefix/bin
+
+clean:
+	rm -f \${PROG} \${OBJS}
+
+distclean: clean
+	rm -f Makefile
+EOF

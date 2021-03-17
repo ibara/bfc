@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Brian Callahan <bcallah@openbsd.org>
+ * Copyright (c) 2021 Brian Callahan <bcallah@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,251 +14,182 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "bfc.h"
+
 /*
- * bfc -- tiny brainfuck compiler
+ * bfc -- brainfuck compiler
  */
 
-extern void *_syscall(void *n, void *a, void *b, void *c);
-
-static unsigned char label[256];
-static int l, m;
-
-static long
-read(int d, void *buf, unsigned long nbytes)
-{
-
-	return (long) _syscall((void *) 3, (void *) d, (void *) buf, (void *) nbytes);
-}
-
-static void
-write(int d, const void *buf, unsigned long nbytes)
-{
-
-	_syscall((void *) 4, (void *) d, (void *) buf, (void *) nbytes);
-}
-
-static long
-open(const char *path, int flags, unsigned int mode)
-{
-
-	return (long) _syscall((void *) 5, (void *) path, (void *) flags, (void *) mode);
-}
-
-static void
-close(int d)
-{
-
-	_syscall((void *) 6, (void *) d, (void *) 0, (void *) 0);
-}
-
-static long
-strlen(const char *s)
-{
-	char *t;
-
-	t = (char *) s;
-	while (*t != '\0')
-		t++;
-
-	return t - s;
-}
-
-static void
-dputs(const char *s, int fd)
-{
-
-	write(fd, s, strlen(s));
-}
-
-static void
-dputi(int n, int fd)
-{
-	char num[10];
-	int i, neg = 0;
-
-	if (n < 0) {
-		neg = 1;
-		n = -n;
-	}
-
-	i = 0;
-	do {
-		num[i++] = n % 10 + '0';
-	} while ((n /= 10) > 0);
-
-	if (neg == 1)
-		write(fd, "-", 1);
-
-	for (i--; i >= 0; i--)
-		write(fd, &num[i], 1);
-}
+int l, m, target = TARGET;
+unsigned char label[256];
 
 static void
 prologue(int fd)
 {
 
-	dputs("\t.text\n", fd);
-	dputs("\t.p2align 2\n", fd);
-	dputs("\t.globl\tmain\n", fd);
-	dputs("\t.type\tmain,@function\n", fd);
-	dputs("main:\n", fd);
-	dputs("\tpushq\t%rbp\n", fd);
-	dputs("\tmovq\t%rsp, %rbp\n", fd);
-	dputs("\tleaq\ttape(%rip), %r15\n", fd);
+	cg_prologue(fd);
 }
 
 static void
 epilogue(int fd)
 {
 
-	dputs("\txorl\t%eax, %eax\n", fd);
-	dputs("\tleaveq\n", fd);
-	dputs("\tretq\n", fd);
-	dputs("\t.size\tmain,.-main\n", fd);
-	dputs("\t.local\ttape\n", fd);
-	dputs("\t.comm\ttape,65536,1\n", fd);
-	dputs("\t.end\n", fd);
+	cg_epilogue(fd);
 }
 
 static void
 left(int fd)
 {
 
-	dputs("\tdecq\t%r15\n", fd);
+	cg_left(fd);
 }
 
 static void
 right(int fd)
 {
 
-	dputs("\tincq\t%r15\n", fd);
+	cg_right(fd);
 }
 
 static void
 inc(int fd)
 {
 
-	dputs("\tmovsbl\t(%r15), %eax\n", fd);
-	dputs("\tincl\t%eax\n", fd);
-	dputs("\tmovb\t%al, (%r15)\n", fd);
+	cg_inc(fd);
 }
 
 static void
 dec(int fd)
 {
 
-	dputs("\tmovsbl\t(%r15), %eax\n", fd);
-	dputs("\tdecl\t%eax\n", fd);
-	dputs("\tmovb\t%al, (%r15)\n", fd);
+	cg_dec(fd);
 }
 
 static void
-getchar(int fd)
+_getchar(int fd)
 {
 
-	dputs("\tmovl\t$3, %eax\n", fd);
-	dputs("\tmovl\t$0, %edi\n", fd);
-	dputs("\tmovq\t%r15, %rsi\n", fd);
-	dputs("\tmovl\t$1, %edx\n", fd);
-	dputs("\tsyscall\n", fd);
+	cg_getchar(fd);
 }
 
 static void
-putchar(int fd)
+_putchar(int fd)
 {
 
-	dputs("\tmovl\t$4, %eax\n", fd);
-	dputs("\tmovl\t$1, %edi\n", fd);
-	dputs("\tmovq\t%r15, %rsi\n", fd);
-	dputs("\tmovl\t$1, %edx\n", fd);
-	dputs("\tsyscall\n", fd);
+	cg_putchar(fd);
 }
 
 static void
 open_loop(int fd)
 {
 
-	label[l] = m++;
-	dputs(".LB", fd);
-	dputi(label[l], fd);
-	dputs(":\n", fd);
-	dputs("\tmovsbl\t(%r15), %eax\n", fd);
-	dputs("\tcmpl\t$0, %eax\n", fd);
-	dputs("\tje\t.LE", fd);
-	dputi(label[l++], fd);
-	dputs("\n", fd);
+	cg_open_loop(fd);
 }
 
 static void
 close_loop(int fd)
 {
 
-	dputs("\tjmp\t.LB", fd);
-	dputi(label[--l], fd);
-	dputs("\n", fd);
-	dputs(".LE", fd);
-	dputi(label[l], fd);
-	dputs(":\n", fd);
+	cg_close_loop(fd);
+}
+
+static int
+cross(const char *s)
+{
+
+	if ((!strcmp("amd64", s)) || (!strcmp("x86_64", s))) {
+		return TAMD64;
+	} else if ((!strcmp("i386", s)) || (!strcmp("i486", s)) ||
+		 (!strcmp("i586", s)) || (!strcmp("i686", s)) ||
+		 (!strcmp("i786", s))) {
+		return TI386;
+	}
+
+	/* No match? Native compile.  */
+	return target;
+}
+
+static void __dead
+usage(void)
+{
+
+	dputs("usage: bfc [-t target] file\n", STDERR_FILENO);
+
+	exit(1);
 }
 
 int
 main(int argc, char *argv[])
 {
-	int c, fd1, fd2;
+	char c;
+	int ch, fd;
 
-	if (argc != 3) {
-		dputs("usage: bfc infile outfile\n", 1);
+	if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		usage();
+
+	if ((ch = getopt(argc, argv, "t:")) != -1) {
+		switch (ch) {
+		case 't':
+			target = cross(optarg);
+			break;
+		default:
+			usage();
+		}
+	}
+	argc -= optind;
+	argv += optind;
+
+	if (argc != 1)
+		usage();
+
+	if ((fd = open(*argv++, O_RDONLY)) == -1) {
+		dputs("bfc: could not open input file\n", STDERR_FILENO);
 		return 1;
 	}
 
-	if ((fd1 = open(argv[1], 0x0000, 0)) == -1) {
-		dputs("bfc: could not open input file\n", 1);
-		return 1;
+	if (pledge("stdio", NULL) == -1)
+		usage();
+
+	prologue(STDOUT_FILENO);
+
+	while (read(fd, &c, STDOUT_FILENO) == 1) {
+		switch (c) {
+		case '<':
+			left(STDOUT_FILENO);
+			break;
+		case '>':
+			right(STDOUT_FILENO);
+			break;
+		case '+':
+			inc(STDOUT_FILENO);
+			break;
+		case '-':
+			dec(STDOUT_FILENO);
+			break;
+		case ',':
+			_getchar(STDOUT_FILENO);
+			break;
+		case '.':
+			_putchar(STDOUT_FILENO);
+			break;
+		case '[':
+			open_loop(STDOUT_FILENO);
+			break;
+		case ']':
+			close_loop(STDOUT_FILENO);
+		}
 	}
 
-	if ((fd2 = open(argv[2], 0x0002 | 0x0200 | 0x0400, 000644)) == -1) {
-		dputs("bfc: could not open output file\n", 1);
-		close(fd1);
-		return 1;
-	}
+	epilogue(STDOUT_FILENO);
 
-	prologue(fd2);
+	close(STDOUT_FILENO);
+	close(fd);
 
-loop:
-	if (read(fd1, &c, 1) < 1) {
-		epilogue(fd2);
-
-		close(fd2);
-		close(fd1);
-
-		return 0;
-	}
-
-	switch (c) {
-	case '<':
-		left(fd2);
-		break;
-	case '>':
-		right(fd2);
-		break;
-	case '+':
-		inc(fd2);
-		break;
-	case '-':
-		dec(fd2);
-		break;
-	case ',':
-		getchar(fd2);
-		break;
-	case '.':
-		putchar(fd2);
-		break;
-	case '[':
-		open_loop(fd2);
-		break;
-	case ']':
-		close_loop(fd2);
-	}
-
-	goto loop;
+	return 0;
 }
