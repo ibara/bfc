@@ -16,6 +16,7 @@
 
 #define TAMD64	0
 #define TI386	1
+#define TC	255
 
 extern int	l, m, target;
 extern unsigned char label[256];
@@ -30,6 +31,17 @@ extern void	amd64_open_loop(int);
 extern void	amd64_prologue(int);
 extern void	amd64_putchar(int);
 extern void	amd64_right(int);
+
+extern void	c_close_loop(int);
+extern void	c_dec(int);
+extern void	c_epilogue(int);
+extern void	c_getchar(int);
+extern void	c_inc(int);
+extern void	c_left(int);
+extern void	c_open_loop(int);
+extern void	c_prologue(int);
+extern void	c_putchar(int);
+extern void	c_right(int);
 
 extern void	cg_close_loop(int);
 extern void	cg_dec(int);

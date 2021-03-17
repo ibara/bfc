@@ -27,6 +27,7 @@ done
 case "$mach" in
   amd64|x86_64) mach="amd64" ; target=0 ;;
   i?86) mach="i386" ; target=1 ;;
+  *) mach="C" ; target=255 ;;
 esac
 
 /usr/bin/printf "Native CPU: %s\n" $mach
@@ -38,7 +39,7 @@ CC =		cc
 CFLAGS =	-g -O2 -DTARGET=$target
 
 PROG =	bfc
-OBJS =	amd64.o bfc.o cg.o dput.o i386.o
+OBJS =	amd64.o bfc.o c.o cg.o dput.o i386.o
 
 all: \${OBJS}
 	\${CC} \${LDFLAGS} -o \${PROG} \${OBJS}

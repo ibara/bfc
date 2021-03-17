@@ -32,6 +32,9 @@ cg_prologue(int fd)
 		break;
 	case TI386:
 		i386_prologue(fd);
+		break;
+	case TC:
+		c_prologue(fd);
 	}
 }
 
@@ -45,6 +48,9 @@ cg_epilogue(int fd)
 		break;
 	case TI386:
 		i386_epilogue(fd);
+		break;
+	case TC:
+		c_epilogue(fd);
 	}
 }
 
@@ -58,6 +64,9 @@ cg_left(int fd)
 		break;
 	case TI386:
 		i386_left(fd);
+		break;
+	case TC:
+		c_left(fd);
 	}
 }
 
@@ -71,6 +80,9 @@ cg_right(int fd)
 		break;
 	case TI386:
 		i386_right(fd);
+		break;
+	case TC:
+		c_right(fd);
 	}
 }
 
@@ -84,6 +96,9 @@ cg_inc(int fd)
 		break;
 	case TI386:
 		i386_inc(fd);
+		break;
+	case TC:
+		c_inc(fd);
 	}
 }
 
@@ -97,6 +112,9 @@ cg_dec(int fd)
 		break;
 	case TI386:
 		i386_dec(fd);
+		break;
+	case TC:
+		c_dec(fd);
 	}
 }
 
@@ -110,6 +128,9 @@ cg_getchar(int fd)
 		break;
 	case TI386:
 		i386_getchar(fd);
+		break;
+	case TC:
+		c_getchar(fd);
 	}
 }
 
@@ -123,6 +144,9 @@ cg_putchar(int fd)
 		break;
 	case TI386:
 		i386_putchar(fd);
+		break;
+	case TC:
+		c_putchar(fd);
 	}
 }
 
@@ -130,10 +154,12 @@ void
 cg_open_loop(int fd)
 {
 
-	label[l] = m++;
-	dputs(".LB", fd);
-	dputi(label[l], fd);
-	dputs(":\n", fd);
+	if (target != TC) {
+		label[l] = m++;
+		dputs(".LB", fd);
+		dputi(label[l], fd);
+		dputs(":\n", fd);
+	}
 
 	switch (target) {
 	case TAMD64:
@@ -141,10 +167,15 @@ cg_open_loop(int fd)
 		break;
 	case TI386:
 		i386_open_loop(fd);
+		break;
+	case TC:
+		c_open_loop(fd);
 	}
 
-	dputi(label[l++], fd);
-	dputs("\n", fd);
+	if (target != TC) {
+		dputi(label[l++], fd);
+		dputs("\n", fd);
+	}
 }
 
 void
@@ -157,11 +188,16 @@ cg_close_loop(int fd)
 		break;
 	case TI386:
 		i386_close_loop(fd);
+		break;
+	case TC:
+		c_close_loop(fd);
 	}
 
-	dputi(label[--l], fd);
-	dputs("\n", fd);
-	dputs(".LE", fd);
-	dputi(label[l], fd);
-	dputs(":\n", fd);
+	if (target != TC) {
+		dputi(label[--l], fd);
+		dputs("\n", fd);
+		dputs(".LE", fd);
+		dputi(label[l], fd);
+		dputs(":\n", fd);
+	}
 }

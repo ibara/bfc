@@ -109,6 +109,8 @@ cross(const char *s)
 		 (!strcmp("i586", s)) || (!strcmp("i686", s)) ||
 		 (!strcmp("i786", s))) {
 		return TI386;
+	} else if ((!strcmp("C", s)) || (!strcmp("c", s))) {
+		return TC;
 	}
 
 	/* No match? Native compile.  */
