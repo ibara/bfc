@@ -20,8 +20,8 @@ Building
 Run `./configure` to detect your native CPU.
 Then run `make`.
 
-Supported CPUs
---------------
+Supported backends
+------------------
 * amd64 (x86_64)
 * i386 (i486, i586, i686, i786)
 * Generic C (for all other CPUs)

@@ -26,7 +26,7 @@ done
 
 case "$mach" in
   amd64|x86_64) mach="amd64" ; target=0 ;;
-  i?86) mach="i386" ; target=1 ;;
+  i[34567]86) mach="i386" ; target=1 ;;
   *) mach="C" ; target=255 ;;
 esac
 
