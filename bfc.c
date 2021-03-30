@@ -30,6 +30,15 @@ int l, m, target = TARGET;
 unsigned char label[256];
 
 static void
+mismatch(void)
+{
+
+	dputs("bfc: bracket mismatch\n", STDERR_FILENO);
+
+	exit(1);
+}
+
+static void
 prologue(int fd)
 {
 
@@ -113,7 +122,7 @@ cross(const char *s)
 		return TC;
 	}
 
-	/* No match? Native compile.  */
+	/* No match? Native compiler.  */
 	return target;
 }
 
@@ -130,7 +139,7 @@ int
 main(int argc, char *argv[])
 {
 	char c;
-	int ch, fd;
+	int ch, d = 0, fd;
 
 	if (pledge("stdio rpath wpath cpath", NULL) == -1)
 		usage();
@@ -181,16 +190,19 @@ main(int argc, char *argv[])
 			_putchar(STDOUT_FILENO);
 			break;
 		case '[':
+			++d;
 			open_loop(STDOUT_FILENO);
 			break;
 		case ']':
+			if (--d < 0)
+				mismatch();
 			close_loop(STDOUT_FILENO);
 		}
 	}
+	if (d != 0)
+		mismatch();
 
 	epilogue(STDOUT_FILENO);
-
-	close(STDOUT_FILENO);
 	close(fd);
 
 	return 0;

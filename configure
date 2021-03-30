@@ -30,7 +30,9 @@ case "$mach" in
   *) mach="C" ; target=255 ;;
 esac
 
-/usr/bin/printf "Native CPU: %s\n" $mach
+/usr/bin/printf "Native backend: %s\n" $mach
+/usr/bin/printf "Install prefix: %s\n" $prefix
+/usr/bin/printf "Please run \`make' to build\n"
 
 cat << EOF > Makefile
 # bfc Makefile

@@ -22,6 +22,17 @@
 
 #include "bfc.h"
 
+static size_t il;
+
+static void
+indent(size_t l, int fd)
+{
+
+	do {
+		dputs("\t", fd);
+	} while (l--);
+}
+
 void
 c_prologue(int fd)
 {
@@ -47,6 +58,7 @@ void
 c_left(int fd)
 {
 
+	indent(il, fd);
 	dputs("--p;\n", fd);
 }
 
@@ -54,6 +66,7 @@ void
 c_right(int fd)
 {
 
+	indent(il, fd);
 	dputs("++p;\n", fd);
 }
 
@@ -61,6 +74,7 @@ void
 c_inc(int fd)
 {
 
+	indent(il, fd);
 	dputs("++*p;\n", fd);
 }
 
@@ -68,6 +82,7 @@ void
 c_dec(int fd)
 {
 
+	indent(il, fd);
 	dputs("--*p;\n", fd);
 }
 
@@ -75,7 +90,9 @@ void
 c_getchar(int fd)
 {
 
+	indent(il, fd);
 	dputs("if ((q = getchar()) != -1)\n", fd);
+	indent(il, fd);
 	dputs("\t*p = q;\n", fd);
 }
 
@@ -83,6 +100,7 @@ void
 c_putchar(int fd)
 {
 
+	indent(il, fd);
 	dputs("putchar(*p);\n", fd);
 }
 
@@ -90,6 +108,7 @@ void
 c_open_loop(int fd)
 {
 
+	indent(il++, fd);
 	dputs("while (*p) {\n", fd);
 }
 
@@ -97,5 +116,6 @@ void
 c_close_loop(int fd)
 {
 
+	indent(--il, fd);
 	dputs("}\n", fd);
 }
