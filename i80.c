@@ -27,7 +27,6 @@ i80_prologue(int fd)
 {
 
 	dputs("\torg\t100h\n", fd);
-	dputs("char:\tdb\t0\n", fd);
 	dputs("\tlxi\tsp, 0dbffh\n", fd);
 	dputs("\tlxi\td, 5bffh\n", fd);
 	dputs("\tlxi\th, 8000h\n", fd);
@@ -89,9 +88,8 @@ i80_getchar(int fd)
 	dputs("\tpush\th\n", fd);
 	dputs("\tmvi\tc, 1\n", fd);
 	dputs("\tcall\t5\n", fd);
-	dputs("\tsta\tchar\n", fd);
-	dputs("\tmvi\tm, char\n", fd);
 	dputs("\tpop\th\n", fd);
+	dputs("\tmov\tm, a\n", fd);
 }
 
 void
