@@ -11,9 +11,8 @@ $ ./a.out
 Why?
 ----
 Read my
-[blog post]()
+[blog post](https://briancallahan.net/blog/20210425.html)
 about this codebase.
-(Blog post forthcoming)
 
 Building
 --------
