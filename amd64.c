@@ -114,5 +114,5 @@ void
 amd64_close_loop(int fd)
 {
 
-	dputs("\tjmp\t.LB",fd);
+	dputs("\tjmp\t.LB", fd);
 }
