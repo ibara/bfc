@@ -27,6 +27,7 @@ done
 case "$mach" in
   amd64|x86_64) mach="amd64" ; target=0 ;;
   i[34567]86) mach="i386" ; target=1 ;;
+  8080|i80|z80) mach="i80" ; target=2 ;;
   *) mach="C" ; target=255 ;;
 esac
 
@@ -41,7 +42,7 @@ CC =		cc
 CFLAGS =	-g -O2 -DTARGET=$target
 
 PROG =	bfc
-OBJS =	amd64.o bfc.o c.o cg.o dput.o i386.o
+OBJS =	amd64.o bfc.o c.o cg.o dput.o i386.o i80.o
 
 all: \${OBJS}
 	\${CC} \${LDFLAGS} -o \${PROG} \${OBJS}

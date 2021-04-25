@@ -115,9 +115,12 @@ cross(const char *s)
 	if ((!strcmp("amd64", s)) || (!strcmp("x86_64", s))) {
 		return TAMD64;
 	} else if ((!strcmp("i386", s)) || (!strcmp("i486", s)) ||
-		 (!strcmp("i586", s)) || (!strcmp("i686", s)) ||
-		 (!strcmp("i786", s))) {
+		   (!strcmp("i586", s)) || (!strcmp("i686", s)) ||
+		   (!strcmp("i786", s))) {
 		return TI386;
+	} else if ((!strcmp("8080", s)) || (!strcmp("i80", s)) ||
+		   (!strcmp("z80", s))) {
+		return TI80;
 	} else if ((!strcmp("C", s)) || (!strcmp("c", s))) {
 		return TC;
 	}

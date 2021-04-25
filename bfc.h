@@ -16,6 +16,7 @@
 
 #define TAMD64	0
 #define TI386	1
+#define TI80	2
 #define TC	255
 
 extern int	l, m, target;
@@ -67,3 +68,14 @@ extern void	i386_open_loop(int);
 extern void	i386_prologue(int);
 extern void	i386_putchar(int);
 extern void	i386_right(int);
+
+extern void	i80_close_loop(int);
+extern void	i80_dec(int);
+extern void	i80_epilogue(int);
+extern void	i80_getchar(int);
+extern void	i80_inc(int);
+extern void	i80_left(int);
+extern void	i80_open_loop(int);
+extern void	i80_prologue(int);
+extern void	i80_putchar(int);
+extern void	i80_right(int);

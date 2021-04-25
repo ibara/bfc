@@ -24,6 +24,7 @@ Supported backends
 ------------------
 * amd64 (x86_64)
 * i386 (i486, i586, i686, i786)
+* 8080/Z80 (8080, i80, z80)
 * Generic C (for all other CPUs)
 
 Please feel free to add additional CPU support.

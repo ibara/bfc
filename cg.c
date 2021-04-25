@@ -33,6 +33,9 @@ cg_prologue(int fd)
 	case TI386:
 		i386_prologue(fd);
 		break;
+	case TI80:
+		i80_prologue(fd);
+		break;
 	case TC:
 		c_prologue(fd);
 	}
@@ -48,6 +51,9 @@ cg_epilogue(int fd)
 		break;
 	case TI386:
 		i386_epilogue(fd);
+		break;
+	case TI80:
+		i80_epilogue(fd);
 		break;
 	case TC:
 		c_epilogue(fd);
@@ -65,6 +71,9 @@ cg_left(int fd)
 	case TI386:
 		i386_left(fd);
 		break;
+	case TI80:
+		i80_left(fd);
+		break;
 	case TC:
 		c_left(fd);
 	}
@@ -80,6 +89,9 @@ cg_right(int fd)
 		break;
 	case TI386:
 		i386_right(fd);
+		break;
+	case TI80:
+		i80_right(fd);
 		break;
 	case TC:
 		c_right(fd);
@@ -97,6 +109,9 @@ cg_inc(int fd)
 	case TI386:
 		i386_inc(fd);
 		break;
+	case TI80:
+		i80_inc(fd);
+		break;
 	case TC:
 		c_inc(fd);
 	}
@@ -112,6 +127,9 @@ cg_dec(int fd)
 		break;
 	case TI386:
 		i386_dec(fd);
+		break;
+	case TI80:
+		i80_dec(fd);
 		break;
 	case TC:
 		c_dec(fd);
@@ -129,6 +147,9 @@ cg_getchar(int fd)
 	case TI386:
 		i386_getchar(fd);
 		break;
+	case TI80:
+		i80_getchar(fd);
+		break;
 	case TC:
 		c_getchar(fd);
 	}
@@ -144,6 +165,9 @@ cg_putchar(int fd)
 		break;
 	case TI386:
 		i386_putchar(fd);
+		break;
+	case TI80:
+		i80_putchar(fd);
 		break;
 	case TC:
 		c_putchar(fd);
@@ -168,6 +192,9 @@ cg_open_loop(int fd)
 	case TI386:
 		i386_open_loop(fd);
 		break;
+	case TI80:
+		i80_open_loop(fd);
+		break;
 	case TC:
 		c_open_loop(fd);
 	}
@@ -188,6 +215,9 @@ cg_close_loop(int fd)
 		break;
 	case TI386:
 		i386_close_loop(fd);
+		break;
+	case TI80:
+		i80_close_loop(fd);
 		break;
 	case TC:
 		c_close_loop(fd);
