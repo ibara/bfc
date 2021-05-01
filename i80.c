@@ -40,6 +40,13 @@ i80_epilogue(int fd)
 {
 
 	dputs("\trst\t0\n", fd);
+	dputs("newl:\n", fd);
+	dputs("\tpush\th\n", fd);
+	dputs("\tmvi\te, 13\n", fd);
+	dputs("\tmvi\tc, 2\n", fd);
+	dputs("\tcall\t5\n", fd);
+	dputs("\tpop\th\n", fd);
+	dputs("\tret\n", fd);
 	dputs("\tend\n", fd);
 }
 
@@ -91,6 +98,9 @@ i80_putchar(int fd)
 {
 
 	dputs("\tpush\th\n", fd);
+	dputs("\tmov\ta, m\n", fd);
+	dputs("\tcpi\t10\n", fd);
+	dputs("\tcz\tnewl\n", fd);
 	dputs("\tmov\te, m\n", fd);
 	dputs("\tmvi\tc, 2\n", fd);
 	dputs("\tcall\t5\n", fd);
